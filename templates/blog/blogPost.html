@@ -1,8 +1,15 @@
-{% extends 'home/base.html' %}
-{% block title %}
-Home-icoder{% endblock title %}
-{% block blogactive %}active{% endblock blogactive %}
-{% block body %}
-<h1>This is Blog Post page</h1>
-<p>{{slug}}</p>
+{% extends 'home/base.html' %} {% block title %} BlogPost-icoder{% endblock title %}
+{% block blogactive %}active{% endblock blogactive %} {% block body %}
+<div class="container" >
+  <h1>
+    <a href="/blog">Back to All</a>
+  </h1>
+</div>
+<div class="container my-3">
+  <h2 class="blog-post-title">{{post.title}}</h2>
+  <p class="blog-post-meta">
+    {{post.timestamp}} by <a href="/admin">{{post.author}}</a>
+  </p>
+  <p>{{post.content}}</p>
+</div>
 {% endblock body %}
