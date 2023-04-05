@@ -1,13 +1,14 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from .models import Contact
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate, logout
 from blog.models import Post
 # Create your views here.
 
-
+# HTML pages
 def index(request):
     return render(request, 'home/home.html')
-
 
 def contact(request):
     if request.method == 'POST':
@@ -26,18 +27,16 @@ def contact(request):
             messages.success(request, 'Contact request has been sent')
     return render(request, 'home/contact.html')
 
-
 def about(request):
     return render(request, 'home/about.html')
 
-
 def search(request):
     query = request.GET['query']
-    if len(query) > 77 :
+    if len(query) > 77:
         allPosts = []
     else:
-        allPostsTitle = Post.objects.filter(title__icontains= query)
-        allPostsContent  = Post.objects.filter(content__icontains = query )
+        allPostsTitle = Post.objects.filter(title__icontains=query)
+        allPostsContent = Post.objects.filter(content__icontains=query)
         allPosts = allPostsTitle.union(allPostsContent)
 
     if allPosts.count() == 0:
@@ -45,3 +44,66 @@ def search(request):
 
     params = {'allPosts': allPosts, 'query': query}
     return render(request, 'home/search.html', params)
+
+# API 
+
+def handleSignUp(request):
+    if request.method == 'POST':
+        # get the parameters
+        username = request.POST['username']
+        fName = request.POST['fName']
+        lName = request.POST['lName']
+        email = request.POST['email']
+        pass1 = request.POST['pass1']
+        pass2 = request.POST['pass2']
+
+        # check for errorneous inputs
+        # username should be under 10 characters
+        if len(username) > 10:
+            messages.error(request, 'Username must be under 10 characters')
+            return redirect('/')
+
+        # username should be alphanumeric
+        if not username.isalnum():
+            messages.error(
+                request, 'Username should only contain letters and numbers')
+            return redirect('/')
+
+        # passwords should match
+        if pass1 != pass2:
+            messages.error(request, 'Passwords do not match')
+            return redirect('/')
+
+        # create the user
+        myuser = User.objects.create_user(username, email, pass1)
+        myuser.first_name = fName
+        myuser.last_name = lName
+        myuser.save()
+        messages.success(
+            request, 'Your iCoder account has been created successfully')
+        return redirect('/')
+    else:
+        return HttpResponse('404 Error')
+
+def handleLogin(request):
+    if request.method == 'POST':
+        # get the parameters
+        loginusername = request.POST['loginUser']
+        loginpass = request.POST['loginPass']
+
+        user = authenticate(username=loginusername, password=loginpass)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Successfully Logged In')
+            return redirect('/')
+        else:
+            messages.error(request, 'Login Credentials didn\'t match')
+            return redirect('/')
+
+    return HttpResponse('handleLogin')
+
+def handleLogout(request):
+    logout(request)
+    messages.success(request, 'Successfully Logged out ')
+    return redirect('/')
