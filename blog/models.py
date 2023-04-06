@@ -25,4 +25,4 @@ class BlogComment(models.Model):
     timestamp= models.DateTimeField(default=now)
 
     def __str__(self):
-        return self.comment[0:13] + "..." + "by" + " " + self.user.username
+        return self.comment[0:13] + "..." + "by " + self.user.username
