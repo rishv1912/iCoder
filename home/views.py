@@ -45,7 +45,7 @@ def search(request):
     params = {'allPosts': allPosts, 'query': query}
     return render(request, 'home/search.html', params)
 
-# API 
+# Authentication APIs
 
 def handleSignUp(request):
     if request.method == 'POST':

@@ -1,6 +1,20 @@
-{% extends 'home/base.html' %} {% block title %} BlogPost-icoder{% endblock title %}
-{% block blogactive %}active{% endblock blogactive %} {% block body %}
-<div class="container" >
+{% extends 'home/base.html' %} {% block title %} BlogPost-icoder{%endblock title %} {% block blogactive %}active{% endblock blogactive %} {% block body %}
+{% if messages %} {% for message in messages %}
+<div
+  class="alert alert-{{ message.tags }} alert-dismissible fade show my-0 "
+  role="alert"
+>
+  <strong> {{ message }} </strong>
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %} {% endif %}
+<div class="container">
+
   <h1>
     <a href="/blog">Back to All</a>
   </h1>
@@ -11,5 +25,22 @@
     {{post.timestamp}} by <a href="#">{{post.author}}</a>
   </p>
   <p>{{post.content}}</p>
+</div>
+<div class="container">
+
+  <h2>comments</h2>
+  <div class="row my-3">
+    <form action="{% url 'postComment' %}" method="post">
+      {% csrf_token %}
+      <input type="text" name="comments" placeholder="Enter comment here">
+      <input type="hidden" name="postSno" value="{{post.sno}}" >
+      <input type="submit" value="Submit">
+     </form>
+    <div class="col-md-2 ">image here</div>
+    <div class="col-md-10 ">comment </div>
+  </div>
+ 
+
+ 
 </div>
 {% endblock body %}
