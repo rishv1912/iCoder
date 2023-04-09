@@ -73,7 +73,7 @@ def handleSignUp(request):
         if pass1 != pass2:
             messages.error(request, 'Passwords do not match')
             return redirect('/')
-
+ 
         # create the user
         myuser = User.objects.create_user(username, email, pass1)
         myuser.first_name = fName
