@@ -1,6 +1,15 @@
-{% extends 'home/base.html' %} {% block title %} BlogPost-icoder{%endblock title
-%} {% block blogactive %}active{% endblock blogactive %} {% block body %} {%
-load humanize %} {% if messages %} {% for message in messages %}
+{% extends 'home/base.html' %} {% block title %} BlogPost-icoder{%endblock title %} {% block blogactive %}active{% endblock blogactive %} {% block body %} 
+
+{% block js %}
+<script>
+   let previews=document.getElementsByClassName('preview');
+  Array.from(previews).forEach((element)=>{element.innerHTML=element.innerText;})
+      
+</script>
+{% endblock js %}
+{%load humanize %} {% load extras %} {% load static %} 
+{% if messages %}
+{% for message in messages %}
 <div
   class="alert alert-{{ message.tags }} alert-dismissible fade show my-0 "
   role="alert"
@@ -15,70 +24,79 @@ load humanize %} {% if messages %} {% for message in messages %}
 </div>
 {% endfor %} {% endif %}
 
+<div class="container my-1">
+  <h1>
+    <a href="/blog">Back</a>
+  </h1>
+</div>
+
 <div class="container my-3">
   <h2 class="blog-post-title">{{post.title}}</h2>
   <p class="blog-post-meta">
     {{post.timeStamp}} by <a href="#">{{post.author}}</a>
   </p>
-  <p>{{post.content}}</p>
+  <p>{{post.content|safe}}</p>
   <hr />
 </div>
+
 <div class="container">
   <h2>Comments({{comments.count}})</h2>
   {% if user.is_anonymous %}
   <p>Please login to post a comment</p>
   {% else %}
-  <form action="/blog/postComment" method="post">
+  <form action="{% url 'postComment' %}" method="post">
     {% csrf_token %}
     <div class="form-group">
-      <label for="exampleInputEmail1">Post Comment </label>
+      <label for="vichar">Post Comment </label>
       <input
         type="text"
         class="form-control"
-        name="comment"
+        name="vichar"
+        id="vichar"
         placeholder="Enter comment here"
       />
     </div>
     <input type="hidden" name="postSno" value="{{post.sno}}" />
+    <input type="hidden" name="parentSno" value="" />
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
   {% for comment in comments %}
   <div class="row my-3">
     <div class="col-md-1">
       <img
-        class="rounded mx-auto d-block w-100 p-2"
-        src="/static/img/user.png"
+        class="rounded mx-auto d-block w-75 my-2 border border-dark p-2"
+        src="{% static 'img/user.png' %}"
         alt="user"
       />
     </div>
     <div class="col-md-11">
-      <b> {{comment.user.username}} </b>
-      <span class="badge badge-secondary"
-        >{{comment.timestamp | naturaltime}}</span
-      >
+      <b> {{comment.user.username}} </b> at {{comment.timestamp| naturaltime}}
       <div>{{comment.comment}}</div>
-      <div class="reply mx-0">
+      <div class="reply my-2 mx-0">
+        {% if user.is_authenticated %}
         <button
-          class="btn btn-sm btn-primary"
+          class="btn btn-primary"
           type="button"
-          data-toggle="collapse"
-          data-target="#replyBox{{comment.sno}}"
+          data-bs-toggle="collapse"
+          data-bs-target="#replyBox{{comment.sno}}"
           aria-expanded="false"
-          aria-controls="replyBox{{comment.sno}}"
+          aria-controls="replyBox{{comment.sno}} "
         >
-          Reply
+          reply
         </button>
         <div class="collapse" id="replyBox{{comment.sno}}">
-          <div class="card card-body my-2">
-            <form action="/blog/postComment" method="post">
+          <div class="card card-body my-1">
+            <!-- Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger. -->
+            <form action="{% url 'postComment' %}" method="post">
               {% csrf_token %}
               <div class="form-group">
-                <label for="comment">Post a reply </label>
+                <label for="vichar">Post a reply</label>
                 <input
                   type="text"
                   class="form-control"
-                  name="comment"
-                  placeholder="Enter comment here"
+                  name="vichar"
+                  id="vichar"
+                  placeholder="Enter Your reply"
                 />
                 <input type="hidden" name="parentSno" value="{{comment.sno}}" />
               </div>
@@ -87,9 +105,42 @@ load humanize %} {% if messages %} {% for message in messages %}
             </form>
           </div>
         </div>
+        {% else %}
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#replyBox{{comment.sno}}"
+          aria-expanded="false"
+          aria-controls="replyBox{{comment.sno}} "
+        >
+          Login to reply
+        </button>
+        {% endif %}
+        <div class="replies my-2">
+          {% for reply in replyDict|get_val:comment.sno %}
+          <div class="row my-2">
+            <div class="col-md-1">
+              <img
+                class="rounded mx-auto d-block w-75 my-2 border border-dark p-2"
+                src="{% static 'img/user.png' %}"
+                alt="user"
+              />
+            </div>
+            <div class="col-md-11">
+              <div class="col-md-11">
+                <b> {{reply.user.username}} </b>
+                <span>{{reply.timestamp| naturaltime}}</span>
+                <div>{{reply.comment}}</div>
+              </div>
+              <br />
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </div>
-      {% endfor %} {% endif %}
     </div>
-    {% endblock body %}
   </div>
+  {% endfor %} {% endif %}
 </div>
+{% endblock body %}
