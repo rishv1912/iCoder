@@ -7,7 +7,7 @@ Built using Django and Bootstrap. Later on frontend frameworks will be added. ti
 
 
 ## Features 
-iCoder is mine one of the projects for django so it has basic features which a blog site usually have .
+iCoder is one of my project for django so it has basic features which a blog site usually have .
 1. Login/logout
 2. Comment & Replies 
 3. Post views 
