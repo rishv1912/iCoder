@@ -3,7 +3,7 @@
 {% block js %}
 <script>
    let previews=document.getElementsByClassName('preview');
-  Array.from(previews).forEach((element)=>{element.innerHTML=element.innerText;})
+  Array.from(previews).forEach((element)=>{element.innerHTML=element.innerText;}) 
       
 </script>
 {% endblock js %}
@@ -33,7 +33,7 @@
 <div class="container my-3">
   <h2 class="blog-post-title">{{post.title}}</h2>
   <p class="blog-post-meta">
-    {{post.timeStamp}} by <a href="#">{{post.author}}</a>
+    {{post.timestamp}} by <a href="#">{{post.author}}</a>(<span>{{post.views}} views</span>)
   </p>
   <p>{{post.content|safe}}</p>
   <hr />
@@ -70,7 +70,8 @@
       />
     </div>
     <div class="col-md-11">
-      <b> {{comment.user.username}} </b> at {{comment.timestamp| naturaltime}}
+      <b> {{comment.user.username}} </b> 
+      <span class="badge bg-secondary">{{comment.timestamp| naturaltime}}</span>
       <div>{{comment.comment}}</div>
       <div class="reply my-2 mx-0">
         {% if user.is_authenticated %}
@@ -130,7 +131,7 @@
             <div class="col-md-11">
               <div class="col-md-11">
                 <b> {{reply.user.username}} </b>
-                <span>{{reply.timestamp| naturaltime}}</span>
+                <span class="badge bg-secondary">{{reply.timestamp| naturaltime}}</span>
                 <div>{{reply.comment}}</div>
               </div>
               <br />
