@@ -8,9 +8,13 @@ from blog.models import Post
 
 # HTML pages
 def index(request):
+    '''Function that render the landing page of iCoder'''
     return render(request, 'home/home.html')
 
 def contact(request):
+    '''Function that render the contact page of iCoder'''
+
+    # getting the input of contact
     if request.method == 'POST':
         name = request.POST['name']
         email = request.POST['email']
@@ -18,16 +22,20 @@ def contact(request):
         desc = request.POST['desc']
         print(name, email, phone, desc)
 
+        # requirement for submitting the contact 
         if len(name) < 2 or len(email) < 3 or len(phone) < 10 or len(desc) < 4:
             messages.error(request, 'please fill the form correctly')
         else:
             contact = Contact(name=name, email=email,
                               phone=phone, content=desc)
             contact.save()
+            # rendering the message after the contact submittion
+
             messages.success(request, 'Contact request has been sent')
     return render(request, 'home/contact.html')
 
 def about(request):
+    '''Function that render the contact page of iCoder'''
     return render(request, 'home/about.html')
 
 def search(request):
